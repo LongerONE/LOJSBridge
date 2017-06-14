@@ -13,6 +13,7 @@
 		E9AE1AC81EF11F0F004642D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9AE1AC61EF11F0F004642D1 /* Main.storyboard */; };
 		E9AE1ACA1EF11F0F004642D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9AE1AC91EF11F0F004642D1 /* Assets.xcassets */; };
 		E9AE1ACD1EF11F0F004642D1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9AE1ACB1EF11F0F004642D1 /* LaunchScreen.storyboard */; };
+		E9AE1AD71EF12691004642D1 /* LOJSBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AE1AD61EF12691004642D1 /* LOJSBridge.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		E9AE1AC91EF11F0F004642D1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E9AE1ACC1EF11F0F004642D1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E9AE1ACE1EF11F0F004642D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E9AE1AD51EF12691004642D1 /* LOJSBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LOJSBridge.h; sourceTree = "<group>"; };
+		E9AE1AD61EF12691004642D1 /* LOJSBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LOJSBridge.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,7 @@
 		E9AE1ABC1EF11F0E004642D1 /* LOJSBridge-OC */ = {
 			isa = PBXGroup;
 			children = (
+				E9AE1AD41EF12684004642D1 /* LOJSBridge */,
 				E9AE1AC01EF11F0E004642D1 /* AppDelegate.h */,
 				E9AE1AC11EF11F0E004642D1 /* AppDelegate.m */,
 				E9AE1AC31EF11F0E004642D1 /* ViewController.h */,
@@ -77,6 +81,15 @@
 				E9AE1ABE1EF11F0E004642D1 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E9AE1AD41EF12684004642D1 /* LOJSBridge */ = {
+			isa = PBXGroup;
+			children = (
+				E9AE1AD51EF12691004642D1 /* LOJSBridge.h */,
+				E9AE1AD61EF12691004642D1 /* LOJSBridge.m */,
+			);
+			path = LOJSBridge;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,6 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9AE1AD71EF12691004642D1 /* LOJSBridge.m in Sources */,
 				E9AE1AC51EF11F0E004642D1 /* ViewController.m in Sources */,
 				E9AE1AC21EF11F0E004642D1 /* AppDelegate.m in Sources */,
 				E9AE1ABF1EF11F0E004642D1 /* main.m in Sources */,
@@ -314,6 +328,7 @@
 				E9AE1AD31EF11F0F004642D1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

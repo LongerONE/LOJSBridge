@@ -7,8 +7,10 @@
 //
 
 #import "ViewController.h"
+#import "LOJSBridge.h"
 
-@interface ViewController ()
+@interface ViewController ()<UIWebViewDelegate>
+@property (weak, nonatomic) IBOutlet UIWebView *webView;
 
 @end
 
@@ -17,6 +19,33 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1"]];
+    [self.webView loadRequest:request];
+    
+    self.webView.delegate = self;
+}
+
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    
+    
+    return YES;
+}
+
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    
+}
+
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    
+}
+
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    
 }
 
 
