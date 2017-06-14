@@ -24,14 +24,14 @@
 
 @implementation LOJSBridge
 
-
+#pragma mark - Init
 + (instancetype)instanceWithVarName:(NSString *)varname {
     return [[self alloc] initWithVarName:varname];
 }
 
 - (instancetype)initWithVarName:(NSString *)var {
     _varName = var;
-    _jsStartString = [NSString stringWithFormat:@"var %@={};",_varName];
+    _jsStartString = [NSString stringWithFormat:@"window.%@={};",_varName];
     _jsFinishString = @"";
     _targetDict = [NSMutableDictionary dictionary];
     _selDict = [NSMutableDictionary dictionary];

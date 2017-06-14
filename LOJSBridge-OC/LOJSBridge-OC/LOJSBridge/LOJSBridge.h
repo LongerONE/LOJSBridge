@@ -23,14 +23,17 @@ typedef NS_ENUM(NSInteger,InjectionType) {
  */
 + (instancetype _Nonnull)instanceWithVarName:(NSString *_Nonnull)varname;
 
+
 /**
  添加JS与iOS方法
  
- @param name JS方法名 Windows.heikuai.close 为 close
+ @param name JS方法名 Windows.native.close 为 close
  @param action iOS 方法
  */
-- (void)addJSFunctionName:(NSString * _Nonnull)name target:(id _Nonnull )target selector:(SEL _Nonnull)action type:(InjectionType)type;
-
+- (void)addJSFunctionName:(NSString * _Nonnull)name
+                   target:(id _Nonnull )target
+                 selector:(SEL _Nonnull)action
+                     type:(InjectionType)type;
 
 
 /**
@@ -39,17 +42,26 @@ typedef NS_ENUM(NSInteger,InjectionType) {
  @param name 方法名
  @param value 返回值
  */
-- (void)addReturnJSFunctionName:(NSString *_Nonnull )name value:(id _Nonnull)value type:(InjectionType)type;
+- (void)addReturnJSFunctionName:(NSString *_Nonnull )name
+                          value:(id _Nonnull)value
+                           type:(InjectionType)type;
 
 
 
+/**
+ 注入网页开始加载时的JS
 
-- (void)injectStartJSIn:(id)webView;
+ @param webView webView对象 支持 UIWebView 和 WKWebView
+ */
+- (void)injectStartJSIn:(id _Nonnull )webView;
 
 
-- (void)injectFinishJSIn:(id)webView;
+/**
+ 注入网页加载完毕时的JS
 
-
+ @param webView webView对象 支持 UIWebView 和 WKWebView
+ */
+- (void)injectFinishJSIn:(id _Nonnull )webView;
 
 
 /**
