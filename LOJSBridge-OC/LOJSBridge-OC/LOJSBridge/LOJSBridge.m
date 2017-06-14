@@ -7,6 +7,8 @@
 //
 
 #import "LOJSBridge.h"
+#import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
 @interface LOJSBridge () {
     NSString *_varName;
@@ -36,6 +38,8 @@
     return self;
 }
 
+
+#pragma mark - addJSFunctionName
 - (void)addJSFunctionName:(NSString *)name target:(id)target selector:(SEL)action type:(InjectionType)type {
     //缓存
     [_targetDict setObject:target forKey:name];
@@ -84,6 +88,7 @@
 }
 
 
+#pragma mark - addReturnJSFunctionName
 - (void)addReturnJSFunctionName:(NSString *)name value:(id)value type:(InjectionType)type {
     NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(){return '%@'}",_varName,name,value];
     if (type == InjectionTypeStart) {
@@ -94,6 +99,44 @@
 }
 
 
+#pragma mark - InjectStartJS
+- (void)injectStartJSIn:(id)webView {
+    if ([webView isKindOfClass:[UIWebView class]]) {
+        UIWebView *uiWebView = (UIWebView *)webView;
+        [uiWebView stringByEvaluatingJavaScriptFromString:_jsStartString];
+    }
+    
+    if ([webView isKindOfClass:[WKWebView class]]) {
+        WKWebView *wkWebView = (WKWebView *)webView;
+        [wkWebView evaluateJavaScript:_jsStartString completionHandler:^(id _Nullable data, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Inject start JS error: %@", error);
+            }
+        }];
+    }
+}
+
+#pragma mark - InjectFinishJS
+- (void)injectFinishJSIn:(id)webView {
+    if ([webView isKindOfClass:[UIWebView class]]) {
+        UIWebView *uiWebView = (UIWebView *)webView;
+        [uiWebView stringByEvaluatingJavaScriptFromString:_jsFinishString];
+    }
+    
+    if ([webView isKindOfClass:[WKWebView class]]) {
+        WKWebView *wkWebView = (WKWebView *)webView;
+        [wkWebView evaluateJavaScript:_jsFinishString completionHandler:^(id _Nullable data, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Inject finish JS error: %@", error);
+            }
+        }];
+    }
+}
+
+
+
+
+#pragma mark - Handle Request
 - (BOOL)handleRequestString:(NSString *)string {
     if ([string hasPrefix:@"iossel://///"]) {
         NSString *actionString = [[string componentsSeparatedByString:@"/////"] lastObject];
@@ -126,9 +169,6 @@
         return NO;
     }
 }
-
-
-
 
 
 - (id)performtarget:(id)target selector:(SEL)selector withObjects:(NSArray *)args {

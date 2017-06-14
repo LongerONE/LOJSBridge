@@ -42,6 +42,16 @@ typedef NS_ENUM(NSInteger,InjectionType) {
 - (void)addReturnJSFunctionName:(NSString *_Nonnull )name value:(id _Nonnull)value type:(InjectionType)type;
 
 
+
+
+- (void)injectStartJSIn:(id)webView;
+
+
+- (void)injectFinishJSIn:(id)webView;
+
+
+
+
 /**
  处理Web内部请求，映射到 iOS 方法中
  _Nonnull
