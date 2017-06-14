@@ -10,13 +10,15 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
+typedef void (^BOOLBlock)(BOOL boolResult);
+
 @interface LOJSBridge () {
     NSString *_varName;
     NSMutableDictionary *_targetDict;
     NSMutableDictionary *_selDict;
 }
 
-
+@property (nonatomic, copy) NSString *jsVarString;
 @property (nonatomic, copy) NSString *jsStartString;
 @property (nonatomic, copy) NSString *jsFinishString;
 
@@ -31,7 +33,8 @@
 
 - (instancetype)initWithVarName:(NSString *)var {
     _varName = var;
-    _jsStartString = [NSString stringWithFormat:@"window.%@={};",_varName];
+    _jsVarString = [NSString stringWithFormat:@"window.%@={};",_varName];
+    _jsStartString = @"";
     _jsFinishString = @"";
     _targetDict = [NSMutableDictionary dictionary];
     _selDict = [NSMutableDictionary dictionary];
@@ -101,39 +104,88 @@
 
 #pragma mark - InjectStartJS
 - (void)injectStartJSIn:(id)webView {
-    if ([webView isKindOfClass:[UIWebView class]]) {
-        UIWebView *uiWebView = (UIWebView *)webView;
-        [uiWebView stringByEvaluatingJavaScriptFromString:_jsStartString];
-    }
-    
-    if ([webView isKindOfClass:[WKWebView class]]) {
-        WKWebView *wkWebView = (WKWebView *)webView;
-        [wkWebView evaluateJavaScript:_jsStartString completionHandler:^(id _Nullable data, NSError * _Nullable error) {
-            if (error) {
-                NSLog(@"Inject start JS error: %@", error);
-            }
-        }];
-    }
+    [self isVarNull:webView result:^(BOOL boolResult) {
+        if (boolResult) {
+            //注入初始化变量JS
+            [self inject:_jsVarString in:webView];
+        } else {
+           //变量已存在
+            NSLog(@"(LOJSBridge)Warn: Var is already exist!");
+        }
+        
+        //注入功能JS
+        [self inject:_jsStartString in:webView];
+    }];
 }
 
 #pragma mark - InjectFinishJS
 - (void)injectFinishJSIn:(id)webView {
+    [self isVarNull:webView result:^(BOOL boolResult) {
+        if (boolResult) {
+            NSLog(@"(LOJSBridge)Warn: Var is null!");
+        } else {
+            [self inject:_jsFinishString in:webView];
+        }
+    }];
+}
+
+- (void)inject:(NSString *)jsString in:(id)webView {
+    
+    if (jsString.length == 0) {
+        return;
+    }
+    
     if ([webView isKindOfClass:[UIWebView class]]) {
         UIWebView *uiWebView = (UIWebView *)webView;
-        [uiWebView stringByEvaluatingJavaScriptFromString:_jsFinishString];
+        [uiWebView stringByEvaluatingJavaScriptFromString:jsString];
     }
     
     if ([webView isKindOfClass:[WKWebView class]]) {
         WKWebView *wkWebView = (WKWebView *)webView;
-        [wkWebView evaluateJavaScript:_jsFinishString completionHandler:^(id _Nullable data, NSError * _Nullable error) {
+        [wkWebView evaluateJavaScript:jsString completionHandler:^(id _Nullable data, NSError * _Nullable error) {
             if (error) {
-                NSLog(@"Inject finish JS error: %@", error);
+                NSLog(@"(LOJSBridge)Inject  JS error: %@", error);
             }
         }];
     }
 }
 
 
+//判断变量是否正常
+- (void)isVarNull:(id)webView result:(BOOLBlock)boolBlcok {
+    if (webView == nil) {
+        boolBlcok(@YES);
+    }
+    
+    NSString *isVarNullJS = [NSString stringWithFormat:@"window.%@==null",_varName];
+    
+    if ([webView isKindOfClass:[UIWebView class]]) {
+        UIWebView *uiWebView = (UIWebView *)webView;
+        id result = [uiWebView stringByEvaluatingJavaScriptFromString:isVarNullJS];
+        NSString *resString = [NSString stringWithFormat:@"%@",result];
+        BOOL isNull = [resString isEqualToString:@"true"];
+        boolBlcok(isNull);
+    }
+    
+    
+    if ([webView isKindOfClass:[WKWebView class]]) {
+        WKWebView *wkWebView = (WKWebView *)webView;
+        [wkWebView evaluateJavaScript:isVarNullJS completionHandler:^(id _Nullable data, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Inject finish JS error: %@", error);
+                
+                boolBlcok(@YES);
+            } else {
+                
+                
+                
+            }
+        }];
+        
+    } else {
+        boolBlcok(@YES);
+    }
+}
 
 
 #pragma mark - Handle Request
