@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger,InjectionType) {
  @param name JS方法名 Windows.native.close 为 close
  @param action iOS 方法
  */
-- (void)addJSFunctionName:(NSString * _Nonnull)name
+- (void)addJSFunctionName:(NSString * _Nonnull)functionName
                    target:(id _Nonnull )target
                  selector:(SEL _Nonnull)action
                      type:(InjectionType)type;
@@ -39,10 +39,10 @@ typedef NS_ENUM(NSInteger,InjectionType) {
 /**
  添加返回参数的JS
  
- @param name 方法名
+ @param functionName 方法名
  @param value 返回值
  */
-- (void)addReturnJSFunctionName:(NSString *_Nonnull )name
+- (void)addReturnJSFunctionName:(NSString *_Nonnull )functionName
                           value:(id _Nonnull)value
                            type:(InjectionType)type;
 
@@ -64,12 +64,14 @@ typedef NS_ENUM(NSInteger,InjectionType) {
 - (void)injectFinishJSIn:(id _Nonnull )webView;
 
 
+
 /**
  处理Web内部请求，映射到 iOS 方法中
- _Nonnull
- @param string 请求地址，本类内部已定义
+
+ @param webView webView对象
+ @return 是否满足映射
  */
-- (BOOL)handleRequestString:(NSString *_Nonnull)string;
+- (BOOL)handleRequest:(NSURLRequest *)request;
 
 
 @end

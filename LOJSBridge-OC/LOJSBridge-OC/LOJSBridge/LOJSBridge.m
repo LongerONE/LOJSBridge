@@ -12,6 +12,11 @@
 
 typedef void (^BOOLBlock)(BOOL boolResult);
 
+#define URL_Header @"iossel:"
+#define Header_Seperator @"/////"
+#define Function_Seperator @":///:"
+#define Param_Seperator @":://:"
+
 @interface LOJSBridge () {
     NSString *_varName;
     NSMutableDictionary *_targetDict;
@@ -43,10 +48,10 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 
 
 #pragma mark - addJSFunctionName
-- (void)addJSFunctionName:(NSString *)name target:(id)target selector:(SEL)action type:(InjectionType)type {
+- (void)addJSFunctionName:(NSString *)functionName target:(id)target selector:(SEL)action type:(InjectionType)type {
     //缓存
-    [_targetDict setObject:target forKey:name];
-    [_selDict setObject:NSStringFromSelector(action) forKey:name];
+    [_targetDict setObject:target forKey:functionName];
+    [_selDict setObject:NSStringFromSelector(action) forKey:functionName];
     
     //判断iOS方法参数个数
     NSArray *param = [NSStringFromSelector(action) componentsSeparatedByString:@":"];
@@ -59,7 +64,8 @@ typedef void (^BOOLBlock)(BOOL boolResult);
         for (int i = 0; i < param.count - 1; i++) {
             if (i != 0) {
                 jsParamString = [jsParamString stringByAppendingString:@","];
-                urlParamString = [urlParamString stringByAppendingString:@"+':://:'+"];
+                NSString *urlParmSeperator = [NSString stringWithFormat:@"+'%@'+",Param_Seperator];
+                urlParamString = [urlParamString stringByAppendingString:urlParmSeperator];
             }
             
             NSString *param = [NSString stringWithFormat:@"parameter%d",i + 1];
@@ -69,8 +75,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
             
             urlParamString = [urlParamString stringByAppendingString:param];
         }
-        
-        NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href='iossel://///%@:///:'%@};",_varName,name,jsParamString,name,urlParamString];
+        NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href='%@%@%@%@'%@};",_varName,functionName,jsParamString,URL_Header,Header_Seperator,functionName,Function_Seperator,urlParamString];
         
         if (type == InjectionTypeStart) {
             self.jsStartString = [self.jsStartString stringByAppendingString:actionJS];
@@ -80,7 +85,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
         
     } else{
         //无参数
-        NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href='iossel://///%@'};",_varName,name,jsParamString,name];
+        NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href='%@%@%@'};",_varName,functionName,jsParamString,URL_Header,Header_Seperator,functionName];
         
         if (type == InjectionTypeStart) {
             self.jsStartString = [self.jsStartString stringByAppendingString:actionJS];
@@ -92,8 +97,8 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 
 
 #pragma mark - addReturnJSFunctionName
-- (void)addReturnJSFunctionName:(NSString *)name value:(id)value type:(InjectionType)type {
-    NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(){return '%@'}",_varName,name,value];
+- (void)addReturnJSFunctionName:(NSString *)functionName value:(id)value type:(InjectionType)type {
+    NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(){return '%@'}",_varName,functionName,value];
     if (type == InjectionTypeStart) {
         self.jsStartString = [self.jsStartString stringByAppendingString:actionJS];
     } else if (type == InjectionTypeFinish) {
@@ -189,22 +194,25 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 
 
 #pragma mark - Handle Request
-- (BOOL)handleRequestString:(NSString *)string {
-    if ([string hasPrefix:@"iossel://///"]) {
-        NSString *actionString = [[string componentsSeparatedByString:@"/////"] lastObject];
+- (BOOL)handleRequest:(NSURLRequest *)request {
+    if (!request) return NO;
+    
+    NSString *requstString = [[[request URL] absoluteString] stringByRemovingPercentEncoding];
+    if ([requstString hasPrefix:URL_Header]) {
+        NSString *actionString = [[requstString componentsSeparatedByString:Header_Seperator] lastObject];
         
-        NSArray *actionParamList = [actionString componentsSeparatedByString:@":///:"];
+        NSArray *functionParamList = [actionString componentsSeparatedByString:Function_Seperator];
         
-        NSString *actionName = [actionParamList firstObject];
+        NSString *functionName = [functionParamList firstObject];
         //方法名
         
-        id target = [_targetDict objectForKey:actionName];
-        SEL selector = NSSelectorFromString([_selDict objectForKey:actionName]);
+        id target = [_targetDict objectForKey:functionName];
+        SEL selector = NSSelectorFromString([_selDict objectForKey:functionName]);
         
         NSArray *params;
-        if (actionParamList.count > 1) {
+        if (functionParamList.count > 1) {
             //有参数
-            params = [[actionParamList lastObject] componentsSeparatedByString:@":://:"]; //iOS方法的参数
+            params = [[functionParamList lastObject] componentsSeparatedByString:Param_Seperator]; //iOS方法的参数
         } else {
             //无参数
             params = @[];
@@ -215,9 +223,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
         }
         
         return YES;
-        
     } else {
-        
         return NO;
     }
 }
