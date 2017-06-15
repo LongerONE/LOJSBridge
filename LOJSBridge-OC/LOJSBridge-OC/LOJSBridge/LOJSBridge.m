@@ -12,7 +12,7 @@
 
 typedef void (^BOOLBlock)(BOOL boolResult);
 
-#define URL_Header @"iossel:"
+#define URL_Header @"iosselector:"
 #define Header_Seperator @"/////"
 #define Function_Seperator @":///:"
 #define Param_Seperator @":://:"
@@ -177,13 +177,10 @@ typedef void (^BOOLBlock)(BOOL boolResult);
         WKWebView *wkWebView = (WKWebView *)webView;
         [wkWebView evaluateJavaScript:isVarNullJS completionHandler:^(id _Nullable data, NSError * _Nullable error) {
             if (error) {
-                NSLog(@"Inject finish JS error: %@", error);
-                
+                NSLog(@"(LOJSBridge)Inject finish JS error: %@", error);
                 boolBlcok(@YES);
             } else {
-                
-                
-                
+                boolBlcok((BOOL)data);
             }
         }];
         
@@ -198,6 +195,8 @@ typedef void (^BOOLBlock)(BOOL boolResult);
     if (!request) return NO;
     
     NSString *requstString = [[[request URL] absoluteString] stringByRemovingPercentEncoding];
+    NSLog(@"(LOJSBridge)request: %@",requstString);
+    
     if ([requstString hasPrefix:URL_Header]) {
         NSString *actionString = [[requstString componentsSeparatedByString:Header_Seperator] lastObject];
         

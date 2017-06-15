@@ -27,7 +27,7 @@ typedef NS_ENUM(NSInteger,InjectionType) {
 /**
  添加JS与iOS方法
  
- @param name JS方法名 Windows.native.close 为 close
+ @param functionName JS方法名 Windows.native.close 为 close
  @param action iOS 方法
  */
 - (void)addJSFunctionName:(NSString * _Nonnull)functionName
