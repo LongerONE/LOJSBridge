@@ -32,6 +32,7 @@
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
     [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:) type:InjectionTypeStart];
+    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from iOS Native!" type:InjectionTypeStart];
 }
 
 
@@ -63,6 +64,11 @@
 
 - (void)setInfo:(NSString *)info {
     NSLog(@"%@",info);
+}
+
+
+- (NSString *)getData {
+    return @"This is from iOS Native!";
 }
 
 - (void)didReceiveMemoryWarning {
