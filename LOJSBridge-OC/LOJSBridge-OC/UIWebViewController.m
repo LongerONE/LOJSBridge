@@ -31,12 +31,15 @@
     self.webView.delegate = self;
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
+    [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:) type:InjectionTypeStart];
 }
 
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     
-    if ([_loJSBridge handleRequestString:webView.request.URL.absoluteString]) return NO;
+    NSLog(@"%@",request.URL.absoluteString);
+    
+    if ([_loJSBridge handleRequest:request]) return NO;
     
     return YES;
 }
@@ -54,6 +57,12 @@
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     
+}
+
+
+
+- (void)setInfo:(NSString *)info {
+    NSLog(@"%@",info);
 }
 
 - (void)didReceiveMemoryWarning {
