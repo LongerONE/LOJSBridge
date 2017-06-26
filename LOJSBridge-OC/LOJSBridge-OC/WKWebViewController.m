@@ -7,8 +7,13 @@
 //
 
 #import "WKWebViewController.h"
+#import <WebKit/WebKit.h>
+#import "LOJSBridge.h"
 
-@interface WKWebViewController ()
+@interface WKWebViewController ()<WKNavigationDelegate> {
+    WKWebView *_wkWebView;
+    LOJSBridge *_loJSBridge;
+}
 
 @end
 
@@ -17,6 +22,47 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    CGRect frame = [UIScreen mainScreen].bounds;
+    frame.size.height -= 64;
+    _wkWebView = [[WKWebView alloc] initWithFrame:frame];
+    _wkWebView.navigationDelegate = self;
+    [self.view addSubview:_wkWebView];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1"]];
+    [_wkWebView loadRequest:request];
+    
+    
+    _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
+    [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:) type:InjectionTypeFinish];
+    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from iOS Native!" type:InjectionTypeFinish];
+}
+
+
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(null_unspecified WKNavigation *)navigation {
+    [_loJSBridge injectStartJSIn:webView];
+}
+
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
+    [_loJSBridge injectFinishJSIn:webView];
+}
+
+- (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(null_unspecified WKNavigation *)navigation {
+    
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    if ([_loJSBridge handleRequest:navigationAction.request]) {
+        decisionHandler(WKNavigationActionPolicyCancel);
+    } else {
+        decisionHandler(WKNavigationActionPolicyAllow);
+    }
+}
+
+
+- (void)setInfo:(NSString *)info {
+    NSLog(@"%@",info);
 }
 
 - (void)didReceiveMemoryWarning {
