@@ -41,17 +41,17 @@
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
     [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:)];
-    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from iOS Native!"];
+    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from WKWebView"];
 }
 
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(null_unspecified WKNavigation *)navigation {
-    [_loJSBridge injectJSFunctions:webView];
+    
 }
 
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
-    
+    [_loJSBridge injectJSFunctions:webView];
 }
 
 - (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(null_unspecified WKNavigation *)navigation {

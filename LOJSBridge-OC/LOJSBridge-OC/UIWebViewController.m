@@ -32,7 +32,7 @@
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
     [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:)];
-    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from iOS Native!"];
+    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from UIWebView"];
 }
 
 
