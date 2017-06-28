@@ -25,14 +25,14 @@
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1:3000"]];
     [self.webView loadRequest:request];
     
     self.webView.delegate = self;
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
-    [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:) type:InjectionTypeStart];
-    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from iOS Native!" type:InjectionTypeStart];
+    [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:)];
+    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from iOS Native!"];
 }
 
 
@@ -47,12 +47,11 @@
 
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
-    [_loJSBridge injectStartJSIn:webView];
 }
 
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [_loJSBridge injectFinishJSIn:webView];
+    [_loJSBridge injectJSFunctions:webView];
 }
 
 

@@ -8,11 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger,InjectionType) {
-    InjectionTypeStart = 0,  //在网页开始加载时注入
-    InjectionTypeFinish = 1  //在网页加载结束后注入
-};
-
 @interface LOJSBridge : NSObject
 
 /**
@@ -32,8 +27,7 @@ typedef NS_ENUM(NSInteger,InjectionType) {
  */
 - (void)addJSFunctionName:(NSString * _Nonnull)functionName
                    target:(id _Nonnull )target
-                 selector:(SEL _Nonnull)action
-                     type:(InjectionType)type;
+                 selector:(SEL _Nonnull)action;
 
 
 /**
@@ -43,35 +37,25 @@ typedef NS_ENUM(NSInteger,InjectionType) {
  @param value 返回值
  */
 - (void)addReturnJSFunctionName:(NSString *_Nonnull )functionName
-                          value:(id _Nonnull)value
-                           type:(InjectionType)type;
+                          value:(id _Nonnull)value;
 
 
 
 /**
- 注入网页开始加载时的JS
+ 注入JS代码
 
- @param webView webView对象 支持 UIWebView 和 WKWebView
+ @param webView webView(UIWebView or WKWebView)
  */
-- (void)injectStartJSIn:(id _Nonnull )webView;
+- (void)injectJSFunctions:(id _Nonnull)webView;
 
 
 /**
- 注入网页加载完毕时的JS
+ 处理请求映射
 
- @param webView webView对象 支持 UIWebView 和 WKWebView
+ @param request 请求
+ @return 是否可以映射
  */
-- (void)injectFinishJSIn:(id _Nonnull )webView;
-
-
-
-/**
- 处理Web内部请求，映射到 iOS 方法中
-
- @param webView webView对象
- @return 是否满足映射
- */
-- (BOOL)handleRequest:(NSURLRequest *)request;
+- (BOOL)handleRequest:(NSURLRequest *_Nonnull)request;
 
 
 @end

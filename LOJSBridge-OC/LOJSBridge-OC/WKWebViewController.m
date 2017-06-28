@@ -10,7 +10,7 @@
 #import <WebKit/WebKit.h>
 #import "LOJSBridge.h"
 
-@interface WKWebViewController ()<WKNavigationDelegate> {
+@interface WKWebViewController ()<WKNavigationDelegate,WKUIDelegate> {
     WKWebView *_wkWebView;
     LOJSBridge *_loJSBridge;
 }
@@ -25,27 +25,33 @@
     
     CGRect frame = [UIScreen mainScreen].bounds;
     frame.size.height -= 64;
-    _wkWebView = [[WKWebView alloc] initWithFrame:frame];
+    
+    WKWebViewConfiguration *wkConf = [[WKWebViewConfiguration alloc] init];
+    wkConf.preferences.javaScriptCanOpenWindowsAutomatically = YES;
+    wkConf.preferences.javaScriptEnabled = YES;
+    _wkWebView = [[WKWebView alloc] initWithFrame:frame configuration:wkConf];
+    
     _wkWebView.navigationDelegate = self;
+    _wkWebView.UIDelegate = self;
     [self.view addSubview:_wkWebView];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1:3000"]];
     [_wkWebView loadRequest:request];
     
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
-    [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:) type:InjectionTypeFinish];
-    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from iOS Native!" type:InjectionTypeFinish];
+    [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:)];
+    [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from iOS Native!"];
 }
 
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(null_unspecified WKNavigation *)navigation {
-    [_loJSBridge injectStartJSIn:webView];
+    [_loJSBridge injectJSFunctions:webView];
 }
 
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
-    [_loJSBridge injectFinishJSIn:webView];
+    
 }
 
 - (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(null_unspecified WKNavigation *)navigation {
@@ -58,6 +64,13 @@
     } else {
         decisionHandler(WKNavigationActionPolicyAllow);
     }
+}
+
+
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
+    
+    
+ 
 }
 
 

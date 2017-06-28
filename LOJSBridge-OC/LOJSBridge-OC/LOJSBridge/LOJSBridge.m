@@ -13,9 +13,9 @@
 typedef void (^BOOLBlock)(BOOL boolResult);
 
 #define URL_Header @"iosselector:"
-#define Header_Seperator @"/////"
-#define Function_Seperator @":///:"
-#define Param_Seperator @":://:"
+#define Header_Seperator @"//"
+#define Function_Seperator @"&S4jf34RJFk&"
+#define Param_Seperator @"&MFd9FJfd3J32o&"
 
 @interface LOJSBridge () {
     NSString *_varName;
@@ -23,9 +23,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
     NSMutableDictionary *_selDict;
 }
 
-@property (nonatomic, copy) NSString *jsVarString;
-@property (nonatomic, copy) NSString *jsStartString;
-@property (nonatomic, copy) NSString *jsFinishString;
+@property (nonatomic, copy) NSString *jsFunctionString;
 
 @end
 
@@ -38,9 +36,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 
 - (instancetype)initWithVarName:(NSString *)var {
     _varName = var;
-    _jsVarString = [NSString stringWithFormat:@"window.%@={};",_varName];
-    _jsStartString = @"";
-    _jsFinishString = @"";
+    _jsFunctionString = [NSString stringWithFormat:@"var %@={};",_varName];
     _targetDict = [NSMutableDictionary dictionary];
     _selDict = [NSMutableDictionary dictionary];
     return self;
@@ -48,7 +44,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 
 
 #pragma mark - addJSFunctionName
-- (void)addJSFunctionName:(NSString *)functionName target:(id)target selector:(SEL)action type:(InjectionType)type {
+- (void)addJSFunctionName:(NSString *)functionName target:(id)target selector:(SEL)action {
     //缓存
     [_targetDict setObject:target forKey:functionName];
     [_selDict setObject:NSStringFromSelector(action) forKey:functionName];
@@ -64,74 +60,38 @@ typedef void (^BOOLBlock)(BOOL boolResult);
         for (int i = 0; i < param.count - 1; i++) {
             if (i != 0) {
                 jsParamString = [jsParamString stringByAppendingString:@","];
-                NSString *urlParmSeperator = [NSString stringWithFormat:@"+'%@'+",Param_Seperator];
+                NSString *urlParmSeperator = [NSString stringWithFormat:@" + '%@' + ",Param_Seperator];
                 urlParamString = [urlParamString stringByAppendingString:urlParmSeperator];
             }
             
             NSString *param = [NSString stringWithFormat:@"parameter%d",i + 1];
-            
             jsParamString = [jsParamString stringByAppendingString:param];
-            
-            
             urlParamString = [urlParamString stringByAppendingString:param];
         }
+        
         NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href='%@%@%@%@'%@};",_varName,functionName,jsParamString,URL_Header,Header_Seperator,functionName,Function_Seperator,urlParamString];
         
-        if (type == InjectionTypeStart) {
-            self.jsStartString = [self.jsStartString stringByAppendingString:actionJS];
-        } else if (type == InjectionTypeFinish) {
-            self.jsFinishString = [self.jsFinishString stringByAppendingString:actionJS];
-        }
         
+        self.jsFunctionString = [self.jsFunctionString stringByAppendingString:actionJS];
     } else{
         //无参数
         NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href='%@%@%@'};",_varName,functionName,jsParamString,URL_Header,Header_Seperator,functionName];
-        
-        if (type == InjectionTypeStart) {
-            self.jsStartString = [self.jsStartString stringByAppendingString:actionJS];
-        } else if (type == InjectionTypeFinish) {
-            self.jsFinishString = [self.jsFinishString stringByAppendingString:actionJS];
-        }
+        self.jsFunctionString = [self.jsFunctionString stringByAppendingString:actionJS];
     }
 }
 
 
 #pragma mark - addReturnJSFunctionName
-- (void)addReturnJSFunctionName:(NSString *)functionName value:(id)value type:(InjectionType)type {
-    NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(){return '%@'}",_varName,functionName,value];
-    if (type == InjectionTypeStart) {
-        self.jsStartString = [self.jsStartString stringByAppendingString:actionJS];
-    } else if (type == InjectionTypeFinish) {
-        self.jsFinishString = [self.jsFinishString stringByAppendingString:actionJS];
-    }
+- (void)addReturnJSFunctionName:(NSString *)functionName value:(id)value {
+    NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(){return '%@'};",_varName,functionName,value];
+    self.jsFunctionString = [self.jsFunctionString stringByAppendingString:actionJS];
 }
 
 
-#pragma mark - InjectStartJS
-- (void)injectStartJSIn:(id)webView {
-    [self isVarNull:webView result:^(BOOL boolResult) {
-        if (boolResult) {
-            //注入初始化变量JS
-            [self inject:_jsVarString in:webView];
-        } else {
-           //变量已存在
-            NSLog(@"(LOJSBridge)Warn: Var is already exist!");
-        }
-        
-        //注入功能JS
-        [self inject:_jsStartString in:webView];
-    }];
-}
-
-#pragma mark - InjectFinishJS
-- (void)injectFinishJSIn:(id)webView {
-    [self isVarNull:webView result:^(BOOL boolResult) {
-        if (boolResult) {
-            NSLog(@"(LOJSBridge)Warn: Var is null!");
-        } else {
-            [self inject:_jsFinishString in:webView];
-        }
-    }];
+#pragma mark - InjectFunctionJS
+- (void)injectJSFunctions:(id)webView {
+    //注入功能JS
+    [self inject:_jsFunctionString in:webView];
 }
 
 - (void)inject:(NSString *)jsString in:(id)webView {
@@ -147,6 +107,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
     
     if ([webView isKindOfClass:[WKWebView class]]) {
         WKWebView *wkWebView = (WKWebView *)webView;
+        
         [wkWebView evaluateJavaScript:jsString completionHandler:^(id _Nullable data, NSError * _Nullable error) {
             if (error) {
                 NSLog(@"(LOJSBridge)Inject  JS error: %@", error);
@@ -154,41 +115,6 @@ typedef void (^BOOLBlock)(BOOL boolResult);
         }];
     }
 }
-
-
-//判断变量是否正常
-- (void)isVarNull:(id)webView result:(BOOLBlock)boolBlcok {
-    if (webView == nil) {
-        boolBlcok(@YES);
-    }
-    
-    NSString *isVarNullJS = [NSString stringWithFormat:@"window.%@==null",_varName];
-    
-    if ([webView isKindOfClass:[UIWebView class]]) {
-        UIWebView *uiWebView = (UIWebView *)webView;
-        id result = [uiWebView stringByEvaluatingJavaScriptFromString:isVarNullJS];
-        NSString *resString = [NSString stringWithFormat:@"%@",result];
-        BOOL isNull = [resString isEqualToString:@"true"];
-        boolBlcok(isNull);
-    }
-    
-    
-    if ([webView isKindOfClass:[WKWebView class]]) {
-        WKWebView *wkWebView = (WKWebView *)webView;
-        [wkWebView evaluateJavaScript:isVarNullJS completionHandler:^(id _Nullable data, NSError * _Nullable error) {
-            if (error) {
-                NSLog(@"(LOJSBridge)Inject finish JS error: %@", error);
-                boolBlcok(@YES);
-            } else {
-                boolBlcok((BOOL)data);
-            }
-        }];
-        
-    } else {
-        boolBlcok(@YES);
-    }
-}
-
 
 #pragma mark - Handle Request
 - (BOOL)handleRequest:(NSURLRequest *)request {
@@ -233,9 +159,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
     
     if (sig) {
         NSInvocation* invo = [NSInvocation invocationWithMethodSignature:sig];
-        
         [invo setTarget:target];
-        
         [invo setSelector:selector];
         
         //设置参数
@@ -244,16 +168,11 @@ typedef void (^BOOLBlock)(BOOL boolResult);
             [invo setArgument:&obj atIndex:i + 2];
             
         }
-        
         [invo invoke];
         
-        
         if (sig.methodReturnLength) {
-            
             id anObject;
-            
             [invo getReturnValue:&anObject];
-            
             return anObject;
         }  else {
             return nil;
