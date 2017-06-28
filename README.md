@@ -12,7 +12,7 @@ var string =  window.iOSNative.getData();
 ...
 ```
 
-#初始化
+# 初始化
 
 ```
 - (void)viewDidLoad {
@@ -29,7 +29,7 @@ var string =  window.iOSNative.getData();
 ```
 
 
-#注入JavaScript
+# 注入JavaScript
 
 * UIWebView
 
@@ -50,7 +50,7 @@ var string =  window.iOSNative.getData();
 ```
 
 
-#处理
+# 处理
 
 * UIWebView
 
@@ -76,7 +76,7 @@ var string =  window.iOSNative.getData();
 ```
 
 
-#Objective-C 
+# Objective-C 
 ```
 - (void)setInfo:(NSString *)info {
     NSLog(@"%@",info);
