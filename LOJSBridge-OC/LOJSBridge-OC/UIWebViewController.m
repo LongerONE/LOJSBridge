@@ -32,6 +32,7 @@
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
     [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:)];
+    [_loJSBridge addJSFunctionName:@"setInfo3" target:self selector:@selector(setInfo3:b:c:)];
     [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from UIWebView"];
 }
 
@@ -74,6 +75,15 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
+- (void)setInfo3:(NSString *)a b:(NSString *)b c:(NSString *)c {
+    NSLog(@"%@",a);
+    NSLog(@"%@",b);
+    NSLog(@"%@",c);
+}
+
+
 
 /*
 #pragma mark - Navigation
