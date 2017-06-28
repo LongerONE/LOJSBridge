@@ -40,6 +40,7 @@
     
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
+    [_loJSBridge addJSFunctionName:@"close" target:self selector:@selector(close)];
     [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:)];
     [_loJSBridge addJSFunctionName:@"setInfo3" target:self selector:@selector(setInfo3:b:c:)];
     [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from WKWebView"];
@@ -90,6 +91,11 @@
     NSLog(@"%@",a);
     NSLog(@"%@",b);
     NSLog(@"%@",c);
+}
+
+
+- (void)close {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 /*
