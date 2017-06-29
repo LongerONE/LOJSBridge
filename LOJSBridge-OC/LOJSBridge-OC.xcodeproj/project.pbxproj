@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E9805A221F0496FE00FD0FBC /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = E9805A211F0496FE00FD0FBC /* index.html */; };
 		E9AE1ABF1EF11F0E004642D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AE1ABE1EF11F0E004642D1 /* main.m */; };
 		E9AE1AC21EF11F0E004642D1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AE1AC11EF11F0E004642D1 /* AppDelegate.m */; };
 		E9AE1AC51EF11F0E004642D1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AE1AC41EF11F0E004642D1 /* ViewController.m */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E9805A211F0496FE00FD0FBC /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		E9AE1ABA1EF11F0E004642D1 /* LOJSBridge-OC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LOJSBridge-OC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9AE1ABE1EF11F0E004642D1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E9AE1AC01EF11F0E004642D1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -48,6 +50,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E9805A201F0496FE00FD0FBC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				E9805A211F0496FE00FD0FBC /* index.html */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
 		E9AE1AB11EF11F0E004642D1 = {
 			isa = PBXGroup;
 			children = (
@@ -68,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				E9AE1AD41EF12684004642D1 /* LOJSBridge */,
+				E9805A201F0496FE00FD0FBC /* Sources */,
 				E9AE1AC01EF11F0E004642D1 /* AppDelegate.h */,
 				E9AE1AC11EF11F0E004642D1 /* AppDelegate.m */,
 				E9AE1AC31EF11F0E004642D1 /* ViewController.h */,
@@ -162,6 +173,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9AE1ACD1EF11F0F004642D1 /* LaunchScreen.storyboard in Resources */,
+				E9805A221F0496FE00FD0FBC /* index.html in Resources */,
 				E9AE1ACA1EF11F0F004642D1 /* Assets.xcassets in Resources */,
 				E9AE1AC81EF11F0F004642D1 /* Main.storyboard in Resources */,
 			);

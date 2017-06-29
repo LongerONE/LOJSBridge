@@ -9,6 +9,7 @@
 #import "UIWebViewController.h"
 #import "LOJSBridge.h"
 
+
 @interface UIWebViewController ()<UIWebViewDelegate> {
     LOJSBridge *_loJSBridge;
 }
@@ -25,9 +26,8 @@
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1:3000"]];
-    [self.webView loadRequest:request];
-    
+    [self.webView loadHTMLString:[self getHtml] baseURL:nil];
+
     self.webView.delegate = self;
     
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
@@ -38,45 +38,26 @@
 }
 
 
+
+- (NSString *)getHtml {
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html"];
+    return [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:filePath] encoding:NSUTF8StringEncoding error:nil];
+}
+
+
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    
-    NSLog(@"%@",request.URL.absoluteString);
-    
     if ([_loJSBridge handleRequest:request]) return NO;
-    
     return YES;
 }
-
-
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-}
-
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     [_loJSBridge injectJSFunctions:webView];
 }
 
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    
-}
-
-
-
 - (void)setInfo:(NSString *)info {
     NSLog(@"%@",info);
 }
-
-
-- (NSString *)getData {
-    return @"This is from iOS Native!";
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 
 - (void)setInfo3:(NSString *)a b:(NSString *)b c:(NSString *)c {
     NSLog(@"%@",a);
@@ -87,6 +68,9 @@
 - (void)close {
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+
+
 
 /*
 #pragma mark - Navigation

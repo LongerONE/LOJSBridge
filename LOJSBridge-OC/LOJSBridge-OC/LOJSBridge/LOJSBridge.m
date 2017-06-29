@@ -121,7 +121,6 @@ typedef void (^BOOLBlock)(BOOL boolResult);
     if (!request) return NO;
     
     NSString *requstString = [[[request URL] absoluteString] stringByRemovingPercentEncoding];
-    NSLog(@"(LOJSBridge)request: %@",requstString);
     
     if ([requstString hasPrefix:URL_Header]) {
         NSString *actionString = [[requstString componentsSeparatedByString:Header_Seperator] lastObject];

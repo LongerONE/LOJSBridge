@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LOJSBridge Test Page</title>
+    <script src="http://cdn.bootcss.com/jquery/3.2.1/core.js"></script>
+    <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    <script>
+        function getNativeDataString() {
+            var string =  window.iOSNative.getData();
+            var p = document.createElement('p');
+            p.innerText = string;
+
+            $('p.123').append(p);
+        }
+    </script>
+
+</head>
+<body>
+<div>
+	<a href="javascript:window.iOSNative.setInfo('This is from Web')"><h2>SetInfo</h2></a>
+	<a href="javascript:getNativeDataString()" class="mm"> <h2>GetData</h2></a>
+    <p class='123'>content</p>
+    <a href="javascript:window.iOSNative.setInfo3('aaaa','bbbb','ccccc')"><h2>SetInfo3</h2></a>
+    <a href="javascript:window.iOSNative.close()"><h2>Close</h2></a>
+</div>
+</body>
+
+
+
+</html>
+
