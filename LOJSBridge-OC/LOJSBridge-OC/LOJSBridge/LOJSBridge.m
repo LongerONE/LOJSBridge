@@ -14,8 +14,8 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 
 #define URL_Header @"iosselector:"
 #define Header_Seperator @"//"
-#define Function_Seperator @"&S4jf34RJFk&"
-#define Param_Seperator @"&MFd9FJfd3J32o&"
+#define Function_Seperator @"&JsRvUhcf03CgnwrI&"
+#define Param_Seperator @"&Aue8i7yi0qfcfUCf&"
 
 @interface LOJSBridge () {
     NSString *_varName;
