@@ -10,6 +10,12 @@
 
 @interface LOJSBridge : NSObject
 
+
+/**
+ 需要注入的 JS 代码
+ */
+@property (nonatomic, copy) NSString * _Nullable jsFunctionString;
+
 /**
  初始化
  
@@ -44,9 +50,16 @@
 /**
  注入JS代码
 
- @param webView webView(UIWebView or WKWebView)
+ @param UIWebView webView(UIWebView)
+ 
+ WKWebView 注入：
+ WKUserScript *userScript = [[WKUserScript alloc] initWithSource:self.jsBridge.jsFunctionString injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
+ WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+ [config.userContentController addUserScript:userScript];
+ self.wkWebView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:config];
+ 
  */
-- (void)injectJSFunctions:(id _Nonnull)webView;
+- (void)injectJSFunctions:(UIWebView * _Nonnull)webView;
 
 
 /**

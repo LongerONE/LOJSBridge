@@ -12,18 +12,16 @@
 
 typedef void (^BOOLBlock)(BOOL boolResult);
 
-#define URL_Header @"iosselector:"
-#define Header_Seperator @"//"
-#define Function_Seperator @"&JsRvUhcf03CgnwrI&"
-#define Param_Seperator @"&Aue8i7yi0qfcfUCf&"
+#define URL_Header @"iosselector://"
+#define Header_Seperator @"&Header1qw50dHS&"
+#define Function_Seperator @"&FunctionKA4U6Ri0&"
+#define Param_Seperator @"&ParamjJf5eLUp&"
 
 @interface LOJSBridge () {
     NSString *_varName;
     NSMutableDictionary *_targetDict;
     NSMutableDictionary *_selDict;
 }
-
-@property (nonatomic, copy) NSString *jsFunctionString;
 
 @end
 
@@ -36,7 +34,7 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 
 - (instancetype)initWithVarName:(NSString *)var {
     _varName = var;
-    _jsFunctionString = [NSString stringWithFormat:@"var %@={};",_varName];
+    _jsFunctionString = [NSString stringWithFormat:@"window.%@={};",_varName];
     _targetDict = [NSMutableDictionary dictionary];
     _selDict = [NSMutableDictionary dictionary];
     return self;
@@ -89,32 +87,18 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 
 
 #pragma mark - InjectFunctionJS
-- (void)injectJSFunctions:(id)webView {
+- (void)injectJSFunctions:(UIWebView *)webView {
     //注入功能JS
-    [self inject:_jsFunctionString in:webView];
-}
-
-- (void)inject:(NSString *)jsString in:(id)webView {
-    
-    if (jsString.length == 0) {
+    if (self.jsFunctionString.length == 0) {
         return;
     }
     
     if ([webView isKindOfClass:[UIWebView class]]) {
         UIWebView *uiWebView = (UIWebView *)webView;
-        [uiWebView stringByEvaluatingJavaScriptFromString:jsString];
-    }
-    
-    if ([webView isKindOfClass:[WKWebView class]]) {
-        WKWebView *wkWebView = (WKWebView *)webView;
-        
-        [wkWebView evaluateJavaScript:jsString completionHandler:^(id _Nullable data, NSError * _Nullable error) {
-            if (error) {
-                NSLog(@"(LOJSBridge)Inject  JS error: %@", error);
-            }
-        }];
+        [uiWebView stringByEvaluatingJavaScriptFromString:self.jsFunctionString];
     }
 }
+
 
 #pragma mark - Handle Request
 - (BOOL)handleRequest:(NSURLRequest *)request {
