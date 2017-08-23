@@ -17,11 +17,11 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 #define Function_Seperator @"&FunctionKA4U6Ri0&"
 #define Param_Seperator @"&ParamjJf5eLUp&"
 
-@interface LOJSBridge () {
-    NSString *_varName;
-    NSMutableDictionary *_targetDict;
-    NSMutableDictionary *_selDict;
-}
+@interface LOJSBridge ()
+
+@property (copy, nonatomic) NSString *varName;
+@property (weak, nonatomic) NSMutableDictionary *targetDict;
+@property (weak, nonatomic) NSMutableDictionary *selDict;
 
 @end
 
