@@ -10,8 +10,6 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
-typedef void (^BOOLBlock)(BOOL boolResult);
-
 #define URL_Header @"iosselector://"
 #define Header_Seperator @"&Header1qw50dHS&"
 #define Function_Seperator @"&FunctionKA4U6Ri0&"
