@@ -20,33 +20,36 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 @interface LOJSBridge ()
 
 @property (copy, nonatomic) NSString *varName;
-@property (weak, nonatomic) id target;
-@property (strong, nonatomic) NSMutableDictionary *selDict;
+@property (strong, nonatomic) NSMapTable *targetTable;
+@property (strong, nonatomic) NSMapTable *selTable;
 
 @end
 
 @implementation LOJSBridge
 
 #pragma mark - Init
-+ (instancetype)instanceWithVarName:(NSString *)varname target:(id)target {
++ (instancetype)instanceWithVarName:(NSString *)varname{
     LOJSBridge *jsBridge = [[self alloc] initWithVarName:varname];
-    jsBridge.target = target;
+    //target 弱引用
+
+    jsBridge.targetTable = [NSMapTable strongToWeakObjectsMapTable];
+    jsBridge.selTable = [NSMapTable strongToStrongObjectsMapTable];
     return jsBridge;
 }
 
 - (instancetype)initWithVarName:(NSString *)var {
     _varName = var;
     _jsFunctionString = [NSString stringWithFormat:@"window.%@={};",_varName];
-    _selDict = [NSMutableDictionary dictionary];
     return self;
 }
 
 
 #pragma mark - addJSFunctionName
-- (void)addJSFunctionName:(NSString *)functionName selector:(SEL)action {
+- (void)addJSFunctionName:(NSString *)functionName target:(id)target selector:(SEL)action {
     //缓存
-    [_selDict setObject:NSStringFromSelector(action) forKey:functionName];
-    
+    [self.targetTable setObject:target forKey:functionName];
+    [self.selTable setObject:NSStringFromSelector(action) forKey:functionName];
+
     //判断iOS方法参数个数
     NSArray *param = [NSStringFromSelector(action) componentsSeparatedByString:@":"];
     
@@ -114,7 +117,8 @@ typedef void (^BOOLBlock)(BOOL boolResult);
         NSString *functionName = [functionParamList firstObject];
         //方法名
         
-        SEL selector = NSSelectorFromString([_selDict objectForKey:functionName]);
+        SEL selector = NSSelectorFromString([self.selTable objectForKey:functionName]);
+        id target = [self.targetTable objectForKey:functionName];
         
         NSArray *params;
         if (functionParamList.count > 1) {
@@ -125,8 +129,8 @@ typedef void (^BOOLBlock)(BOOL boolResult);
             params = @[];
         }
         
-        if ([self.target respondsToSelector:selector]) {
-            [self performtarget:self.target selector:selector withObjects:params];
+        if ([target respondsToSelector:selector]) {
+            [self performtarget:target selector:selector withObjects:params];
         }
         
         return YES;

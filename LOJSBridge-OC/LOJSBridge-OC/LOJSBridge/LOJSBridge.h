@@ -7,14 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface LOJSBridge : NSObject
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  需要注入的 JS 代码
  */
-@property (nonatomic, copy) NSString * _Nullable jsFunctionString;
+@property (nonatomic, copy) NSString *jsFunctionString;
 
 /**
  初始化
@@ -22,17 +24,16 @@
  @param varname 变量名 windows.native 则为native
  @return instancetype
  */
-+ (instancetype _Nonnull)instanceWithVarName:(NSString *_Nonnull)varname target:(id)target;
-
++ (instancetype _Nonnull)instanceWithVarName:(NSString *)varname;
 
 /**
  添加JS与iOS方法
  
  @param functionName JS方法名 Windows.native.close 为 close
- @param action iOS 方法
+ @param target target
+ @param action OC 方法
  */
-- (void)addJSFunctionName:(NSString * _Nonnull)functionName selector:(SEL _Nonnull)action;
-
+- (void)addJSFunctionName:(NSString *)functionName target:(id)target selector:(SEL)action;
 
 /**
  添加返回参数的JS
@@ -40,24 +41,22 @@
  @param functionName 方法名
  @param value 返回值
  */
-- (void)addReturnJSFunctionName:(NSString *_Nonnull )functionName
-                          value:(id _Nonnull)value;
-
-
+- (void)addReturnJSFunctionName:(NSString *)functionName
+                          value:(id)value;
 
 /**
  注入JS代码
 
- @param UIWebView webView(UIWebView)
- 
  WKWebView 注入：
  WKUserScript *userScript = [[WKUserScript alloc] initWithSource:self.jsBridge.jsFunctionString injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
  WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
  [config.userContentController addUserScript:userScript];
  self.wkWebView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:config];
  
+ 
+ @param webView UIWebView
  */
-- (void)injectJSFunctions:(UIWebView * _Nonnull)webView;
+- (void)injectJSFunctions:(UIWebView *)webView;
 
 
 /**
@@ -66,7 +65,8 @@
  @param request 请求
  @return 是否可以映射
  */
-- (BOOL)handleRequest:(NSURLRequest *_Nonnull)request;
+- (BOOL)handleRequest:(NSURLRequest *)request;
 
+NS_ASSUME_NONNULL_END
 
 @end

@@ -26,19 +26,21 @@
     CGRect frame = [UIScreen mainScreen].bounds;
     frame.size.height -= 64;
     
-    WKWebViewConfiguration *wkConf = [[WKWebViewConfiguration alloc] init];
-    _wkWebView = [[WKWebView alloc] initWithFrame:frame configuration:wkConf];
-    
-    _wkWebView.navigationDelegate = self;
-    [self.view addSubview:_wkWebView];
-    
-    [_wkWebView loadHTMLString:[self getHtml] baseURL:nil];
-    
     _loJSBridge = [LOJSBridge instanceWithVarName:@"iOSNative"];
     [_loJSBridge addJSFunctionName:@"close" target:self selector:@selector(close)];
     [_loJSBridge addJSFunctionName:@"setInfo" target:self selector:@selector(setInfo:)];
     [_loJSBridge addJSFunctionName:@"setInfo3" target:self selector:@selector(setInfo3:b:c:)];
     [_loJSBridge addReturnJSFunctionName:@"getData" value:@"This is from WKWebView"];
+    
+    WKUserScript *userScript = [[WKUserScript alloc] initWithSource:_loJSBridge.jsFunctionString injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
+    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+    [config.userContentController addUserScript:userScript];
+    _wkWebView = [[WKWebView alloc] initWithFrame:frame configuration:config];
+
+    _wkWebView.navigationDelegate = self;
+    [self.view addSubview:_wkWebView];
+    
+    [_wkWebView loadHTMLString:[self getHtml] baseURL:nil];
 }
 
 
@@ -51,7 +53,7 @@
 
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
-    [_loJSBridge injectJSFunctions:webView];
+    
 }
 
 
@@ -83,6 +85,11 @@
 }
 
 
+
+- (void)dealloc {
+
+    
+}
 
 
 - (void)didReceiveMemoryWarning {
