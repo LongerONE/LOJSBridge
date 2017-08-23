@@ -20,31 +20,31 @@ typedef void (^BOOLBlock)(BOOL boolResult);
 @interface LOJSBridge ()
 
 @property (copy, nonatomic) NSString *varName;
-@property (weak, nonatomic) NSMutableDictionary *targetDict;
-@property (weak, nonatomic) NSMutableDictionary *selDict;
+@property (weak, nonatomic) id target;
+@property (strong, nonatomic) NSMutableDictionary *selDict;
 
 @end
 
 @implementation LOJSBridge
 
 #pragma mark - Init
-+ (instancetype)instanceWithVarName:(NSString *)varname {
-    return [[self alloc] initWithVarName:varname];
++ (instancetype)instanceWithVarName:(NSString *)varname target:(id)target {
+    LOJSBridge *jsBridge = [[self alloc] initWithVarName:varname];
+    jsBridge.target = target;
+    return jsBridge;
 }
 
 - (instancetype)initWithVarName:(NSString *)var {
     _varName = var;
     _jsFunctionString = [NSString stringWithFormat:@"window.%@={};",_varName];
-    _targetDict = [NSMutableDictionary dictionary];
     _selDict = [NSMutableDictionary dictionary];
     return self;
 }
 
 
 #pragma mark - addJSFunctionName
-- (void)addJSFunctionName:(NSString *)functionName target:(id)target selector:(SEL)action {
+- (void)addJSFunctionName:(NSString *)functionName selector:(SEL)action {
     //缓存
-    [_targetDict setObject:target forKey:functionName];
     [_selDict setObject:NSStringFromSelector(action) forKey:functionName];
     
     //判断iOS方法参数个数
@@ -114,7 +114,6 @@ typedef void (^BOOLBlock)(BOOL boolResult);
         NSString *functionName = [functionParamList firstObject];
         //方法名
         
-        id target = [_targetDict objectForKey:functionName];
         SEL selector = NSSelectorFromString([_selDict objectForKey:functionName]);
         
         NSArray *params;
@@ -126,8 +125,8 @@ typedef void (^BOOLBlock)(BOOL boolResult);
             params = @[];
         }
         
-        if ([target respondsToSelector:selector]) {
-            [self performtarget:target selector:selector withObjects:params];
+        if ([self.target respondsToSelector:selector]) {
+            [self performtarget:self.target selector:selector withObjects:params];
         }
         
         return YES;

@@ -22,7 +22,7 @@
  @param varname 变量名 windows.native 则为native
  @return instancetype
  */
-+ (instancetype _Nonnull)instanceWithVarName:(NSString *_Nonnull)varname;
++ (instancetype _Nonnull)instanceWithVarName:(NSString *_Nonnull)varname target:(id)target;
 
 
 /**
@@ -31,9 +31,7 @@
  @param functionName JS方法名 Windows.native.close 为 close
  @param action iOS 方法
  */
-- (void)addJSFunctionName:(NSString * _Nonnull)functionName
-                   target:(id _Nonnull )target
-                 selector:(SEL _Nonnull)action;
+- (void)addJSFunctionName:(NSString * _Nonnull)functionName selector:(SEL _Nonnull)action;
 
 
 /**
