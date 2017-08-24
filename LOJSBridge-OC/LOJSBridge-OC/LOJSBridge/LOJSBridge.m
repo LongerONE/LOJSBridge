@@ -68,13 +68,14 @@
             urlParamString = [urlParamString stringByAppendingString:param];
         }
         
-        NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href='%@%@%@%@'%@};",_varName,functionName,jsParamString,URL_Header,Header_Seperator,functionName,Function_Seperator,urlParamString];
-        
+        NSString *fullURL = [NSString stringWithFormat:@"'%@%@%@%@'%@",URL_Header,Header_Seperator,functionName,Function_Seperator,urlParamString];
+        NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href=%@};",_varName,functionName,jsParamString,fullURL];
         
         self.jsFunctionString = [self.jsFunctionString stringByAppendingString:actionJS];
     } else{
         //无参数
-        NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href='%@%@%@'};",_varName,functionName,jsParamString,URL_Header,Header_Seperator,functionName];
+        NSString *fullURL = [NSString stringWithFormat:@"'%@%@%@'",URL_Header,Header_Seperator,functionName];
+        NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href=%@};",_varName,functionName,jsParamString,fullURL];
         self.jsFunctionString = [self.jsFunctionString stringByAppendingString:actionJS];
     }
 }
