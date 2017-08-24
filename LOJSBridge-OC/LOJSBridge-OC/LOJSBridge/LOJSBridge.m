@@ -10,6 +10,9 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
+
+#define is_iOS8 ([UIDevice currentDevice].systemVersion.floatValue >= 8.0 &&  [UIDevice currentDevice].systemVersion.floatValue < 9.0)
+
 #define URL_Header @"iosselector://"
 #define Header_Seperator @"&Header1qw50dHS&"
 #define Function_Seperator @"&FunctionKA4U6Ri0&"
@@ -29,7 +32,7 @@
 + (instancetype)instanceWithVarName:(NSString *)varname{
     LOJSBridge *jsBridge = [[self alloc] initWithVarName:varname];
     //target 弱引用
-
+    
     jsBridge.targetTable = [NSMapTable strongToWeakObjectsMapTable];
     jsBridge.selTable = [NSMapTable strongToStrongObjectsMapTable];
     return jsBridge;
@@ -71,11 +74,22 @@
         NSString *fullURL = [NSString stringWithFormat:@"'%@%@%@%@'%@",URL_Header,Header_Seperator,functionName,Function_Seperator,urlParamString];
         NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href=%@};",_varName,functionName,jsParamString,fullURL];
         
+        //iOS8 无法响应 window.location.href
+        if (is_iOS8) {
+            actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){var iframe = document.createElement('iframe');iframe.setAttribute('src', %@);document.documentElement.appendChild(iframe);iframe.parentNode.removeChild(iframe);iframe = null;};",_varName,functionName,jsParamString,fullURL];
+        }
+        
         self.jsFunctionString = [self.jsFunctionString stringByAppendingString:actionJS];
     } else{
         //无参数
         NSString *fullURL = [NSString stringWithFormat:@"'%@%@%@'",URL_Header,Header_Seperator,functionName];
         NSString *actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){window.location.href=%@};",_varName,functionName,jsParamString,fullURL];
+        
+        //iOS8 无法响应 window.location.href
+        if (is_iOS8) {
+            actionJS = [NSString stringWithFormat:@"%@.%@=function(%@){var iframe = document.createElement('iframe');iframe.setAttribute('src', %@);document.documentElement.appendChild(iframe);iframe.parentNode.removeChild(iframe);iframe = null;};",_varName,functionName,jsParamString,fullURL];
+        }
+        
         self.jsFunctionString = [self.jsFunctionString stringByAppendingString:actionJS];
     }
 }
