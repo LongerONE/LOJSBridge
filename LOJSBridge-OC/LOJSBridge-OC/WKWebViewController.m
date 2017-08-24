@@ -10,7 +10,7 @@
 #import <WebKit/WebKit.h>
 #import "LOJSBridge.h"
 
-@interface WKWebViewController ()<WKNavigationDelegate> {
+@interface WKWebViewController ()<WKNavigationDelegate, WKUIDelegate> {
     WKWebView *_wkWebView;
     LOJSBridge *_loJSBridge;
 }
@@ -35,9 +35,12 @@
     WKUserScript *userScript = [[WKUserScript alloc] initWithSource:_loJSBridge.jsFunctionString injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
     [config.userContentController addUserScript:userScript];
+    
     _wkWebView = [[WKWebView alloc] initWithFrame:frame configuration:config];
 
     _wkWebView.navigationDelegate = self;
+    _wkWebView.UIDelegate = self;
+    
     _wkWebView.allowsBackForwardNavigationGestures = YES;
     [self.view addSubview:_wkWebView];
     
@@ -63,7 +66,7 @@
     
     if (navigationAction.targetFrame == nil) {
         //打开新的空白页
-        /**<a href = "http://xxx" target = "_blank">*/
+        /**  <a href = "http://xxx" target = "_blank">  */
         [webView loadRequest:navigationAction.request];
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
@@ -90,6 +93,49 @@
     NSLog(@"%@",b);
     NSLog(@"%@",c);
 }
+
+
+#pragma mark - WKUIDelegate
+
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
+    //提示框
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addAction:[UIAlertAction actionWithTitle:@"关闭" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler();
+    }]];
+    [self presentViewController:alertController animated:YES completion:^{}];
+}
+
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler {
+    //输入框
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:prompt preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.text = defaultText;
+    }];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"好的" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        NSString *input = ((UITextField *)alertController.textFields.firstObject).text;
+        completionHandler(input);
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler(nil);
+    }]];
+    [self presentViewController:alertController animated:YES completion:^{}];
+}
+
+- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler {
+    //确定或取消框
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"好的" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        completionHandler(YES);
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler(NO);
+    }]];
+    [self presentViewController:alertController animated:YES completion:^{}];
+}
+
+
 
 - (void)close {
     [self.navigationController popViewControllerAnimated:YES];
