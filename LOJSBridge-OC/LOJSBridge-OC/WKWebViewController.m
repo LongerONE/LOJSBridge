@@ -38,6 +38,7 @@
     _wkWebView = [[WKWebView alloc] initWithFrame:frame configuration:config];
 
     _wkWebView.navigationDelegate = self;
+    _wkWebView.allowsBackForwardNavigationGestures = YES;
     [self.view addSubview:_wkWebView];
     
     [_wkWebView loadHTMLString:[self getHtml] baseURL:nil];
@@ -58,6 +59,16 @@
 
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    
+    
+    if (navigationAction.targetFrame == nil) {
+        //打开新的空白页
+        /**<a href = "http://xxx" target = "_blank">*/
+        [webView loadRequest:navigationAction.request];
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
+    }
+    
     if ([_loJSBridge handleRequest:navigationAction.request]) {
         decisionHandler(WKNavigationActionPolicyCancel);
     } else {
