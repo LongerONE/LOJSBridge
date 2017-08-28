@@ -13,7 +13,7 @@
 
 #define is_iOS8 ([UIDevice currentDevice].systemVersion.floatValue >= 8.0 &&  [UIDevice currentDevice].systemVersion.floatValue < 9.0)
 
-#define URL_Header @"iosselector://"
+#define URL_Header @"iosselector:////"
 #define Header_Seperator @"&Header1qw50dHS&"
 #define Function_Seperator @"&FunctionKA4U6Ri0&"
 #define Param_Seperator @"&ParamjJf5eLUp&"
@@ -69,6 +69,7 @@
             NSString *param = [NSString stringWithFormat:@"parameter%d",i + 1];
             jsParamString = [jsParamString stringByAppendingString:param];
             urlParamString = [urlParamString stringByAppendingString:param];
+            
         }
         
         NSString *fullURL = [NSString stringWithFormat:@"'%@%@%@%@'%@",URL_Header,Header_Seperator,functionName,Function_Seperator,urlParamString];
